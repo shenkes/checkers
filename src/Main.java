@@ -66,6 +66,8 @@ public class Main {
         }
 
         CheckersGame checkersGame = new CheckersGame(scan, rand, player1, player2);
+        Move[] moves = {new Move(0,0, 1, 0, null)};
+        checkersGame.printMoves(moves);
         if(first == 1){
             checkersGame.start(true);
         }
