@@ -48,24 +48,30 @@ public class Main {
         }
 
         System.out.println("Choose who starts first.\n" +
-                "Type 0 random." +
+                "Type 0 for random." +
                 "\nType 1 for player 1 or 2 for player 2.");
         first = scan.nextInt();
         while (first < 0 || first > 2) {
             System.out.println("Please put a number between 0 and 5\n");
             System.out.println("Choose who starts first.\n" +
-                    "Type 0 random.\n" +
+                    "Type 0 for random.\n" +
                     "Type 1 for player 1 or 2 for player 2.");
             first = scan.nextInt();
         }
         if (first == 0) {
-            first = (rand.nextInt() % 2) + 1;
+            first = ((rand.nextInt() % 2) + 1);
             System.out.println("Player " + first + " was randomly chosen to move first.\n");
         } else {
             System.out.println("Player " + first + " will move first.\n");
         }
 
-        
+        CheckersGame checkersGame = new CheckersGame(scan, rand, player1, player2);
+        if(first == 1){
+            checkersGame.start(true);
+        }
+        else{
+            checkersGame.start(false);
+        }
 
     }
 

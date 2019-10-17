@@ -1,25 +1,34 @@
+import java.util.Random;
+import java.util.Scanner;
+
 public class CheckersGame {
 
-    private int player1, player2;
+    private final char[][] DEFAULT_BOARD =
+            {
+                    {'O', 'O', 'O', 'O'},
+                    {'O', 'O', 'O', 'O'},
+                    {'O', 'O', 'O', 'O'},
+                    {'/', '/', '/', '/'},
+                    {'/', '/', '/', '/'},
+                    {'X', 'X', 'X', 'X'},
+                    {'X', 'X', 'X', 'X'},
+                    {'X', 'X', 'X', 'X'}
+            };
 
-    public CheckersGame(int player1, int player2){
+    private int player1, player2;
+    private Scanner scan;
+    private Random rand;
+
+    public CheckersGame(Scanner scanner, Random random, int player1, int player2) {
         this.player1 = player1;
         this.player2 = player2;
+        scan = scanner;
+        rand = random;
     }
 
-    public void Start(boolean player1First){
+    public void start(boolean player1First) {
 
-        char[][] board =
-                {
-                        {'O', 'O', 'O', 'O'},
-                        {'O', 'O', 'O', 'O'},
-                        {'O', 'O', 'O', 'O'},
-                        {'/', '/', '/', '/'},
-                        {'/', '/', '/', '/'},
-                        {'X', 'X', 'X', 'X'},
-                        {'X', 'X', 'X', 'X'},
-                        {'X', 'X', 'X', 'X'}
-                };
+        char[][] board = DEFAULT_BOARD;
 
         printBoard(board);
 
@@ -28,15 +37,13 @@ public class CheckersGame {
     private void printBoard(char[][] board) {
         System.out.println("_____________________");
         System.out.println("|                   |");
-        for (int i = 0; i < board.length; i++) {
+        for (int i = board.length - 1; i >= 0; i--) {
             System.out.print("|  ");
-            if (i % 2 == 0) {
+            if (i % 2 != 0) {
                 for (char piece : board[i]) {
                     System.out.print(". " + piece + " ");
                 }
-            }
-
-            if (i % 2 != 0) {
+            } else {
                 for (char piece : board[i]) {
                     System.out.print(piece + " . ");
                 }
