@@ -31,7 +31,7 @@ public class Minimax {
         if(moves.isEmpty())
             return Integer.MIN_VALUE;
         if(curDepth == difficulty){
-            if(ogPlayerTurn == curPlayerTurn){
+            if((ogPlayerTurn == curPlayerTurn && ogPlayerTurn) || (ogPlayerTurn != curPlayerTurn && !ogPlayerTurn)){
                 return manager.boardEvaluation(board) * -1;
             } else {
                 return manager.boardEvaluation(board);
@@ -46,9 +46,9 @@ public class Minimax {
             char[][] boardClone = Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
             manager.makeMove(boardClone, moves.get(i), curPlayerTurn);
             int value = minimaxValue(manager, boardClone, ogPlayerTurn, !curPlayerTurn, curDepth + 1, difficulty, -bestValue);
-//            if(value >= pruningValue){
-//                return -value;
-//            }
+            if(value >= pruningValue){
+                return -value;
+            }
             if(value > bestValue){
                 bestValue = value;
             }

@@ -90,7 +90,7 @@ public class CheckersGame {
                             eval++;
                         break;
                     case PLAYER1KING:
-                        eval += 3;
+                        eval += 4;
                         break;
                     case PLAYER2PIECE:
                         eval --;
@@ -98,7 +98,7 @@ public class CheckersGame {
                             eval--;
                         break;
                     case PLAYER2KING:
-                        eval -= 3;
+                        eval -= 4;
                         break;
                 }
             }
