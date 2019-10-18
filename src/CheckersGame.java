@@ -34,40 +34,114 @@ public class CheckersGame {
         rand = random;
     }
 
-    public void start(boolean player1First) {
+    public void run(boolean player1First) {
 
         board = DEFAULT_BOARD;
         isPlayer1Turn = player1First;
 
-        ArrayList<Move> availableMoves = getMoves(board, isPlayer1Turn);
-        while(!availableMoves.isEmpty()){
+        ArrayList<Move> availableMoves;
+        availableMoves = getMoves(board, isPlayer1Turn);
+        do {
             printBoard(board);
-            Move nextMove;
+            Move nextMove = null;
 
-            if(isPlayer1Turn){
-                if(player1Difficulty == 0){
-                    //nextMove = getPlayerMove(availableMoves)
-                }else{
+            if (isPlayer1Turn) {
+                if (player1Difficulty == 0) {
+                    nextMove = getPlayerMove(availableMoves);
+                } else {
                     //nextMove = minimaxMove(board, isPlayer1Turn, player1Difficulty)
                 }
-            }else{
-                if(player2Difficulty == 0){
-                    //nextMove = getPlayerMove(availableMoves)
-                }else{
+            } else {
+                if (player2Difficulty == 0) {
+                    nextMove = getPlayerMove(availableMoves);
+                } else {
                     //nextMove = minimaxMove(board, isPlayer1Turn, player2Difficulty)
                 }
             }
 
-            // makeMove(board, nextMove)
+            makeMove(board, nextMove, isPlayer1Turn);
             isPlayer1Turn = !isPlayer1Turn;
-        }
-        if(isPlayer1Turn)
-            System.out.println("\n\n\nGAME OVER! PLAYER 1 WINS!");
-        else
-            System.out.println("\n\n\nGAME OVER! PLAYER 2 WINS!");
+            availableMoves = getMoves(board, isPlayer1Turn);
+        } while (!availableMoves.isEmpty());
 
         printBoard(board);
-        printMoves(getMoves(board, true));
+
+        if (isPlayer1Turn)
+            System.out.println("\n\n\nGAME OVER! PLAYER 2 WINS!");
+        else
+            System.out.println("\n\n\nGAME OVER! PLAYER 1 WINS!");
+
+    }
+
+    public void makeMove(char[][] board, Move nextMove, boolean isPlayer1Turn) {
+        // If crowned
+        if (nextMove.getNewRow() == 0 || nextMove.getNewRow() == BOARD_HEIGHT - 1){
+            if(isPlayer1Turn){
+                board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER1[1];
+            } else {
+                board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER2[1];
+            }
+        } else {
+            board[nextMove.getNewRow()][nextMove.getNewCol()] = board[nextMove.getStartRow()][nextMove.getStartCol()];
+        }
+        board[nextMove.getStartRow()][nextMove.getStartCol()] = BLANK;
+
+        // If jump move
+        if ((Math.abs(nextMove.getNewRow() - nextMove.getStartRow())) != 1) {
+            if (nextMove.getStartRow() % 2 == 0) {
+                if (nextMove.getNewCol() > nextMove.getStartCol()) {
+                    if (nextMove.getNewRow() > nextMove.getStartRow())
+                        board[nextMove.getStartRow() + 1][nextMove.getStartCol()] = BLANK;
+                    else
+                        board[nextMove.getStartRow() - 1][nextMove.getStartCol()] = BLANK;
+                } else {
+                    if (nextMove.getNewRow() > nextMove.getStartRow())
+                        board[nextMove.getStartRow() + 1][nextMove.getStartCol() - 1] = BLANK;
+                    else
+                        board[nextMove.getStartRow() - 1][nextMove.getStartCol() - 1] = BLANK;
+                }
+            } else {
+                if (nextMove.getNewCol() > nextMove.getStartCol()) {
+                    if (nextMove.getNewRow() > nextMove.getStartRow())
+                        board[nextMove.getStartRow() + 1][nextMove.getStartCol() + 1] = BLANK;
+                    else
+                        board[nextMove.getStartRow() - 1][nextMove.getStartCol() + 1] = BLANK;
+                } else {
+                    if (nextMove.getNewRow() > nextMove.getStartRow())
+                        board[nextMove.getStartRow() + 1][nextMove.getStartCol()] = BLANK;
+                    else
+                        board[nextMove.getStartRow() - 1][nextMove.getStartCol()] = BLANK;
+                }
+            }
+        }
+
+
+    }
+
+    private Move getPlayerMove(ArrayList<Move> availableMoves) {
+        printMoves(availableMoves);
+        if (isPlayer1Turn)
+            System.out.println("\nIt is Player 1's turn." +
+                    "\nType in a 4 digit move as seen above.");
+        else
+            System.out.println("\nIt is Player 2's turn." +
+                    "\nType in a 4 digit move as seen above.");
+        int proposedMove = scan.nextInt();
+        while (proposedMove < 10 || proposedMove > 9999 || !containsMove(availableMoves, proposedMove)) {
+            System.out.println("Type in a 4 digit move as seen above.");
+            proposedMove = scan.nextInt();
+        }
+        return new Move(proposedMove, null);
+    }
+
+    private boolean containsMove(ArrayList<Move> moveList, int matchingMove) {
+        for (Move move : moveList) {
+            if (
+                    matchingMove == move.getPrintableMove()
+            )
+                return true;
+        }
+        return false;
     }
 
     //TODO: Figure out double jumping
@@ -164,7 +238,7 @@ public class CheckersGame {
                         }
                     }
                     if (!(row <= 1)) {
-                        if (col != 0 && board[row + 2][col - 1] == BLANK) {
+                        if (col != 0 && board[row - 2][col - 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row - 1][col - 1] == enemyPieces[0] || board[row - 1][col - 1] == enemyPieces[1])
                                     possibleMoves.add(new Move(row, col, row - 2, col - 1, null));
@@ -173,7 +247,7 @@ public class CheckersGame {
                                     possibleMoves.add(new Move(row, col, row - 2, col - 1, null));
                             }
                         }
-                        if (col != BOARD_WIDTH - 1 && board[row + 2][col + 1] == BLANK) {
+                        if (col != BOARD_WIDTH - 1 && board[row - 2][col + 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row - 1][col] == enemyPieces[0] || board[row - 1][col] == enemyPieces[1])
                                     possibleMoves.add(new Move(row, col, row - 2, col + 1, null));
@@ -276,16 +350,14 @@ public class CheckersGame {
         System.out.println("\nAvailable Moves:");
         for (Move move : moves) {
 
-            if (move.getStartRow() % 2 == 0)
-                System.out.print(move.getStartCol() * 2);
-            else
-                System.out.print(move.getStartCol() * 2 + 1);
-            System.out.print(move.getStartRow());
-            if (move.getNewRow() % 2 == 0)
-                System.out.print(move.getNewCol() * 2);
-            else
-                System.out.print(move.getNewCol() * 2 + 1);
-            System.out.print(move.getNewRow() + "\t");
+            int printableMove = move.getPrintableMove();
+            if (printableMove < 1000) {
+                System.out.print(0);
+            }
+            if (printableMove < 100) {
+                System.out.print(0);
+            }
+            System.out.print(move.getPrintableMove() + "\t");
 
             System.out.print("(");
             if (move.getStartRow() % 2 == 0)

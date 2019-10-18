@@ -71,10 +71,10 @@ public class Main {
         moves.add(new Move(0,0, 1, 0, null));
         checkersGame.printMoves(moves);
         if(first == 1){
-            checkersGame.start(true);
+            checkersGame.run(true);
         }
         else{
-            checkersGame.start(false);
+            checkersGame.run(false);
         }
 
     }
