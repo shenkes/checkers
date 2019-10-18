@@ -5,7 +5,8 @@ import java.util.Scanner;
 
 public class CheckersGame {
 
-    public static char[][] board;
+    private static char[][] board;
+    private static boolean isPlayer1Turn;
 
     private final char[] PLAYER1 = {'O', '@'}, PLAYER2 = {'X', 'K'};
     private final char BLANK = '/';
@@ -36,6 +37,34 @@ public class CheckersGame {
     public void start(boolean player1First) {
 
         board = DEFAULT_BOARD;
+        isPlayer1Turn = player1First;
+
+        ArrayList<Move> availableMoves = getMoves(board, isPlayer1Turn);
+        while(!availableMoves.isEmpty()){
+            printBoard(board);
+            Move nextMove;
+
+            if(isPlayer1Turn){
+                if(player1Difficulty == 0){
+                    //nextMove = getPlayerMove(availableMoves)
+                }else{
+                    //nextMove = minimaxMove(board, isPlayer1Turn, player1Difficulty)
+                }
+            }else{
+                if(player2Difficulty == 0){
+                    //nextMove = getPlayerMove(availableMoves)
+                }else{
+                    //nextMove = minimaxMove(board, isPlayer1Turn, player2Difficulty)
+                }
+            }
+
+            // makeMove(board, nextMove)
+            isPlayer1Turn = !isPlayer1Turn;
+        }
+        if(isPlayer1Turn)
+            System.out.println("\n\n\nGAME OVER! PLAYER 1 WINS!");
+        else
+            System.out.println("\n\n\nGAME OVER! PLAYER 2 WINS!");
 
         printBoard(board);
         printMoves(getMoves(board, true));
