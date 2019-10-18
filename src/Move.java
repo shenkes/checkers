@@ -1,8 +1,10 @@
+import java.util.ArrayList;
+
 public class Move {
     private final int startRow, startCol, newRow, newCol;
-    private final Move[] doubleJumps;
+    private final ArrayList<Point> doubleJumps;
 
-    public Move(int startRow, int startCol, int newRow, int newCol, Move[] doubleJumps) {
+    public Move(int startRow, int startCol, int newRow, int newCol, ArrayList<Point> doubleJumps) {
         this.startRow = startRow;
         this.startCol = startCol;
         this.newRow = newRow;
@@ -10,12 +12,19 @@ public class Move {
         this.doubleJumps = doubleJumps;
     }
 
-    public Move(int move, Move[] doubleJumps) {
+    public Move(int move) {
+        doubleJumps = new ArrayList<>();
+        int workingMove = move;
+        while(workingMove > 9999){
+            doubleJumps.add(0, new Point((workingMove / 10) % 10, workingMove % 10));
+            workingMove /= 100;
+        }
+
         startRow = (move / 100) % 10;
         if(startRow % 2 == 0){
-            startCol = (move / 1000) / 2;
+            startCol = ((move / 1000) % 10) / 2;
         }else{
-            startCol = ((move / 1000) - 1) / 2;
+            startCol = (((move / 1000) % 10) - 1) / 2;
         }
         newRow = move % 10;
         if(newRow % 2 == 0){
@@ -23,7 +32,6 @@ public class Move {
         }else{
             newCol = (((move / 10) % 10) - 1) / 2;
         }
-        this.doubleJumps = doubleJumps;
     }
 
     public int getStartRow() {
@@ -55,10 +63,16 @@ public class Move {
             result += (newCol * 2 + 1) * 10;
         result += newRow;
 
+        for(Point jump : doubleJumps){
+            result *= 100;
+            result += jump.getX() * 10;
+            result += jump.getY();
+        }
+
         return result;
     }
 
-    public Move[] getDoubleJumps() {
+    public ArrayList<Point> getDoubleJumps() {
         return doubleJumps;
     }
 }

@@ -164,7 +164,7 @@ public class CheckersGame {
             System.out.println("Type in a 4 digit move as seen above.");
             proposedMove = scan.nextInt();
         }
-        return new Move(proposedMove, null);
+        return new Move(proposedMove);
     }
 
     private boolean containsMove(ArrayList<Move> moveList, int matchingMove) {
