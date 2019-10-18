@@ -8,6 +8,10 @@ public class CheckersGame {
     private static char[][] board;
     private static boolean isPlayer1Turn;
 
+    private final char PLAYER1PIECE = 'O';
+    private final char PLAYER1KING = '@';
+    private final char PLAYER2PIECE = 'X';
+    private final char PLAYER2KING = 'K';
     private final char[] PLAYER1 = {'O', '@'}, PLAYER2 = {'X', 'K'};
     private final char BLANK = '/';
     private final char[][] DEFAULT_BOARD =
@@ -73,13 +77,38 @@ public class CheckersGame {
 
     }
 
+    public int boardEvaluation(char[][] board){
+        int eval = 0;
+        for (int row = 0; row < BOARD_HEIGHT; row++){
+            for (int col = 0; col < BOARD_WIDTH; col++){
+                switch (board[row][col]){
+                    case BLANK:
+                        break;
+                    case PLAYER1PIECE:
+                        eval++;
+                        break;
+                    case PLAYER1KING:
+                        eval += 10;
+                        break;
+                    case PLAYER2PIECE:
+                        eval --;
+                        break;
+                    case PLAYER2KING:
+                        eval -= 10;
+                        break;
+                }
+            }
+        }
+        return eval;
+    }
+
     public void makeMove(char[][] board, Move nextMove, boolean isPlayer1Turn) {
         // If crowned
         if (nextMove.getNewRow() == 0 || nextMove.getNewRow() == BOARD_HEIGHT - 1){
             if(isPlayer1Turn){
-                board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER1[1];
+                board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER1KING;
             } else {
-                board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER2[1];
+                board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER2KING;
             }
         } else {
             board[nextMove.getNewRow()][nextMove.getNewCol()] = board[nextMove.getStartRow()][nextMove.getStartCol()];
