@@ -15,7 +15,7 @@ public class Main {
                 "Type 1-5 for a computer player.\n" +
                 "1 is the easiest. 5 is the hardest.");
         player1 = scan.nextInt();
-        while (player1 < 0 || player1 > 5) {
+        while (player1 < 0 || player1 > 15) {
             System.out.println("Please put a number between 0 and 5\n");
             System.out.println("Choose a difficulty for Player 1.\n" +
                     "Type 0 for a human player.\n" +
@@ -34,7 +34,7 @@ public class Main {
                 "Type 1-5 for a computer player.\n" +
                 "1 is the easiest. 5 is the hardest.");
         player2 = scan.nextInt();
-        while (player2 < 0 || player2 > 5) {
+        while (player2 < 0 || player2 > 15) {
             System.out.println("Please put a number between 0 and 5\n");
             System.out.println("Choose a difficulty for Player 2.\n" +
                     "Type 0 for a human player.\n" +
@@ -67,9 +67,6 @@ public class Main {
         }
 
         CheckersGame checkersGame = new CheckersGame(scan, rand, player1, player2);
-        ArrayList<Move> moves = new ArrayList<>();
-        moves.add(new Move(0,0, 1, 0, null));
-        checkersGame.printMoves(moves);
         if(first == 1){
             checkersGame.run(true);
         }

@@ -1,12 +1,11 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
 public class CheckersGame {
 
-    private static char[][] board;
-    private static boolean isPlayer1Turn;
+    private char[][] board;
+    private boolean isPlayer1Turn;
 
     private final char PLAYER1PIECE = 'O';
     private final char PLAYER1KING = '@';
@@ -28,6 +27,7 @@ public class CheckersGame {
     private final int BOARD_WIDTH = 4, BOARD_HEIGHT = 8;
 
     private int player1Difficulty, player2Difficulty;
+    private Minimax minimax = new Minimax();
     private Scanner scan;
     private Random rand;
 
@@ -53,13 +53,13 @@ public class CheckersGame {
                 if (player1Difficulty == 0) {
                     nextMove = getPlayerMove(availableMoves);
                 } else {
-                    //nextMove = minimaxMove(board, isPlayer1Turn, player1Difficulty)
+                    nextMove = minimax.minimaxMove(this, board, true, player1Difficulty);
                 }
             } else {
                 if (player2Difficulty == 0) {
                     nextMove = getPlayerMove(availableMoves);
                 } else {
-                    //nextMove = minimaxMove(board, isPlayer1Turn, player2Difficulty)
+                    nextMove = minimax.minimaxMove(this, board, false, player2Difficulty);
                 }
             }
 
