@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -59,14 +60,15 @@ public class Main {
             first = scan.nextInt();
         }
         if (first == 0) {
-            first = ((rand.nextInt() % 2) + 1);
+            first = (rand.nextInt(2) + 1);
             System.out.println("Player " + first + " was randomly chosen to move first.\n");
         } else {
             System.out.println("Player " + first + " will move first.\n");
         }
 
         CheckersGame checkersGame = new CheckersGame(scan, rand, player1, player2);
-        Move[] moves = {new Move(0,0, 1, 0, null)};
+        ArrayList<Move> moves = new ArrayList<>();
+        moves.add(new Move(0,0, 1, 0, null));
         checkersGame.printMoves(moves);
         if(first == 1){
             checkersGame.start(true);
