@@ -86,15 +86,19 @@ public class CheckersGame {
                         break;
                     case PLAYER1PIECE:
                         eval++;
+                        if(row == 0)
+                            eval++;
                         break;
                     case PLAYER1KING:
-                        eval += 10;
+                        eval += 3;
                         break;
                     case PLAYER2PIECE:
                         eval --;
+                        if(row == BOARD_HEIGHT - 1)
+                            eval--;
                         break;
                     case PLAYER2KING:
-                        eval -= 10;
+                        eval -= 3;
                         break;
                 }
             }
