@@ -48,7 +48,7 @@ public class CheckersGame {
         availableMoves = getMoves(board, isPlayer1Turn);
         do {
             printBoard(board);
-            Move nextMove = null;
+            Move nextMove;
 
             if (isPlayer1Turn) {
                 if (player1Difficulty == 0) {
@@ -147,6 +147,15 @@ public class CheckersGame {
                         board[nextMove.getStartRow() - 1][nextMove.getStartCol()] = BLANK;
                 }
             }
+
+            int baseRow = nextMove.getNewRow();
+            int baseCol = nextMove.getNewCol();
+            for (Point point : nextMove.getDoubleJumps()) {
+                Move next = new Move(baseRow, baseCol, point.getY(), point.getX(), null);
+                makeMove(board, next, isPlayer1Turn);
+                baseRow = point.getY();
+                baseCol = point.getX();
+            }
         }
 
 
@@ -171,7 +180,7 @@ public class CheckersGame {
     private boolean containsMove(ArrayList<Move> moveList, int matchingMove) {
         for (Move move : moveList) {
             if (
-                    matchingMove == move.getPrintableMove()
+                    matchingMove == move.getComparableMove()
             )
                 return true;
         }
@@ -296,13 +305,32 @@ public class CheckersGame {
 
     private void addJumpMove(char[][] board, boolean isPlayer1Turn, int direction, char[] enemyPieces, ArrayList<Move> possibleMoves, int startRow, int startCol, int newRow, int newCol) {
         ArrayList<ArrayList<Point>> terminalDoubleJumpSequences = new ArrayList<>();
-        getTerminalDoubleJumpSequences(board, isPlayer1Turn, direction, enemyPieces, startRow, startCol, newRow, newCol, terminalDoubleJumpSequences);
-        for (ArrayList<Point> jumpSequence : terminalDoubleJumpSequences) {
-            possibleMoves.add(new Move(startRow, startCol, newRow, newCol, jumpSequence));
+        searchNextJump(board, isPlayer1Turn, direction, enemyPieces, startRow, startCol, newRow, newCol, terminalDoubleJumpSequences);
+        if (terminalDoubleJumpSequences.isEmpty()) {
+            possibleMoves.add(new Move(startRow, startCol, newRow, newCol, null));
+        } else {
+            for (ArrayList<Point> jumpSequence : terminalDoubleJumpSequences) {
+                possibleMoves.add(new Move(startRow, startCol, newRow, newCol, jumpSequence));
+            }
         }
     }
 
     private void getTerminalDoubleJumpSequences(char[][] board, boolean isPlayer1Turn, int direction, char[] enemyPieces, int baseRow, int baseCol, int newRow, int newCol, ArrayList<ArrayList<Point>> terminalDoubleJumpSequences) {
+        searchNextJump(board, isPlayer1Turn, direction, enemyPieces, baseRow, baseCol, newRow, newCol, terminalDoubleJumpSequences);
+
+        Point currentPoint = new Point(newCol, newRow);
+        if (terminalDoubleJumpSequences.isEmpty()) {
+            ArrayList<Point> newList = new ArrayList<>();
+            newList.add(currentPoint);
+            terminalDoubleJumpSequences.add(newList);
+        } else {
+            for (ArrayList<Point> jumpSequence : terminalDoubleJumpSequences) {
+                jumpSequence.add(0, currentPoint);
+            }
+        }
+    }
+
+    private void searchNextJump(char[][] board, boolean isPlayer1Turn, int direction, char[] enemyPieces, int baseRow, int baseCol, int newRow, int newCol, ArrayList<ArrayList<Point>> terminalDoubleJumpSequences) {
         char[][] boardClone = Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
         makeMove(boardClone, new Move(baseRow, baseCol, newRow, newCol, null), isPlayer1Turn);
 
@@ -372,17 +400,6 @@ public class CheckersGame {
                         }
                     }
                 }
-            }
-        }
-
-        Point currentPoint = new Point(newCol, newRow);
-        if (terminalDoubleJumpSequences.isEmpty()) {
-            ArrayList<Point> newList = new ArrayList<>();
-            newList.add(currentPoint);
-            terminalDoubleJumpSequences.add(newList);
-        } else {
-            for (ArrayList<Point> jumpSequence : terminalDoubleJumpSequences) {
-                jumpSequence.add(0, currentPoint);
             }
         }
     }
@@ -475,14 +492,24 @@ public class CheckersGame {
         System.out.println("\nAvailable Moves:");
         for (Move move : moves) {
 
-            int printableMove = move.getPrintableMove();
-            if (printableMove < 1000) {
-                System.out.print(0);
+            if (move.getStartRow() % 2 == 0)
+                System.out.print(move.getStartCol() * 2);
+            else
+                System.out.print(move.getStartCol() * 2 + 1);
+            System.out.print(move.getStartRow());
+            if (move.getNewRow() % 2 == 0)
+                System.out.print(move.getNewCol() * 2);
+            else
+                System.out.print(move.getNewCol() * 2 + 1);
+            System.out.print(move.getNewRow());
+            for (Point point : move.getDoubleJumps()) {
+                if (point.getY() % 2 == 0)
+                    System.out.print(point.getX() * 2);
+                else
+                    System.out.print(point.getX() * 2 + 1);
+                System.out.print(point.getY());
             }
-            if (printableMove < 100) {
-                System.out.print(0);
-            }
-            System.out.print(move.getPrintableMove() + "\t");
+            System.out.print("\t");
 
             System.out.print("(");
             if (move.getStartRow() % 2 == 0)
@@ -494,7 +521,16 @@ public class CheckersGame {
                 System.out.print(move.getNewCol() * 2);
             else
                 System.out.print(move.getNewCol() * 2 + 1);
-            System.out.println(", " + move.getNewRow() + ")");
+            System.out.print(", " + move.getNewRow() + ")");
+            for (Point point : move.getDoubleJumps()) {
+                System.out.print(" => (");
+                if (point.getY() % 2 == 0)
+                    System.out.print(point.getX() * 2);
+                else
+                    System.out.print(point.getX() * 2 + 1);
+                System.out.print(", " + point.getY() + ")");
+            }
+            System.out.println();
         }
     }
 
