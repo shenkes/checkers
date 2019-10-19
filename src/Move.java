@@ -15,21 +15,21 @@ public class Move {
     public Move(int move) {
         doubleJumps = new ArrayList<>();
         int workingMove = move;
-        while(workingMove > 9999){
+        while (workingMove > 9999) {
             doubleJumps.add(0, new Point((workingMove / 10) % 10, workingMove % 10));
             workingMove /= 100;
         }
 
         startRow = (move / 100) % 10;
-        if(startRow % 2 == 0){
+        if (startRow % 2 == 0) {
             startCol = ((move / 1000) % 10) / 2;
-        }else{
+        } else {
             startCol = (((move / 1000) % 10) - 1) / 2;
         }
         newRow = move % 10;
-        if(newRow % 2 == 0){
+        if (newRow % 2 == 0) {
             newCol = ((move / 10) % 10) / 2;
-        }else{
+        } else {
             newCol = (((move / 10) % 10) - 1) / 2;
         }
     }
@@ -50,7 +50,7 @@ public class Move {
         return newCol;
     }
 
-    public int getPrintableMove(){
+    public int getPrintableMove() {
         int result = 0;
         if (startRow % 2 == 0)
             result += startCol * 2 * 1000;
@@ -63,10 +63,12 @@ public class Move {
             result += (newCol * 2 + 1) * 10;
         result += newRow;
 
-        for(Point jump : doubleJumps){
-            result *= 100;
-            result += jump.getX() * 10;
-            result += jump.getY();
+        if (doubleJumps != null) {
+            for (Point jump : doubleJumps) {
+                result *= 100;
+                result += jump.getX() * 10;
+                result += jump.getY();
+            }
         }
 
         return result;

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -77,24 +78,24 @@ public class CheckersGame {
 
     }
 
-    public int boardEvaluation(char[][] board){
+    public int boardEvaluation(char[][] board) {
         int eval = 0;
-        for (int row = 0; row < BOARD_HEIGHT; row++){
-            for (int col = 0; col < BOARD_WIDTH; col++){
-                switch (board[row][col]){
+        for (int row = 0; row < BOARD_HEIGHT; row++) {
+            for (int col = 0; col < BOARD_WIDTH; col++) {
+                switch (board[row][col]) {
                     case BLANK:
                         break;
                     case PLAYER1PIECE:
                         eval++;
-                        if(row == 0)
+                        if (row == 0)
                             eval++;
                         break;
                     case PLAYER1KING:
                         eval += 4;
                         break;
                     case PLAYER2PIECE:
-                        eval --;
-                        if(row == BOARD_HEIGHT - 1)
+                        eval--;
+                        if (row == BOARD_HEIGHT - 1)
                             eval--;
                         break;
                     case PLAYER2KING:
@@ -108,8 +109,8 @@ public class CheckersGame {
 
     public void makeMove(char[][] board, Move nextMove, boolean isPlayer1Turn) {
         // If crowned
-        if (nextMove.getNewRow() == 0 || nextMove.getNewRow() == BOARD_HEIGHT - 1){
-            if(isPlayer1Turn){
+        if (nextMove.getNewRow() == 0 || nextMove.getNewRow() == BOARD_HEIGHT - 1) {
+            if (isPlayer1Turn) {
                 board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER1KING;
             } else {
                 board[nextMove.getNewRow()][nextMove.getNewCol()] = PLAYER2KING;
@@ -155,13 +156,13 @@ public class CheckersGame {
         printMoves(availableMoves);
         if (isPlayer1Turn)
             System.out.println("\nIt is Player 1's turn." +
-                    "\nType in a 4 digit move as seen above.");
+                    "\nType in a 4+ digit move as seen above.");
         else
             System.out.println("\nIt is Player 2's turn." +
-                    "\nType in a 4 digit move as seen above.");
+                    "\nType in a 4+ digit move as seen above.");
         int proposedMove = scan.nextInt();
-        while (proposedMove < 10 || proposedMove > 9999 || !containsMove(availableMoves, proposedMove)) {
-            System.out.println("Type in a 4 digit move as seen above.");
+        while (!containsMove(availableMoves, proposedMove)) {
+            System.out.println("Type in a 4+ digit move as seen above.");
             proposedMove = scan.nextInt();
         }
         return new Move(proposedMove);
@@ -177,10 +178,8 @@ public class CheckersGame {
         return false;
     }
 
-    //TODO: Figure out double jumping
     public ArrayList<Move> getMoves(char[][] board, boolean isPlayer1) {
         ArrayList<Move> possibleMoves = new ArrayList<>();
-        boolean jumpFound = false;
         final char[] playerPieces;
         final char[] enemyPieces;
         if (isPlayer1) {
@@ -210,19 +209,19 @@ public class CheckersGame {
                         if (col != 0 && board[row + 2][col - 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row + 1][col - 1] == enemyPieces[0] || board[row + 1][col - 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 1, enemyPieces, possibleMoves, row, col, row + 2, col - 1);
                             } else {
                                 if (board[row + 1][col] == enemyPieces[0] || board[row + 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 1, enemyPieces, possibleMoves, row, col, row + 2, col - 1);
                             }
                         }
                         if (col != BOARD_WIDTH - 1 && board[row + 2][col + 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row + 1][col] == enemyPieces[0] || board[row + 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 1, enemyPieces, possibleMoves, row, col, row + 2, col + 1);
                             } else {
                                 if (board[row + 1][col + 1] == enemyPieces[0] || board[row + 1][col + 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 1, enemyPieces, possibleMoves, row, col, row + 2, col + 1);
                             }
                         }
                     } else {
@@ -232,19 +231,19 @@ public class CheckersGame {
                         if (col != 0 && board[row - 2][col - 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row - 1][col - 1] == enemyPieces[0] || board[row - 1][col - 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, -1, enemyPieces, possibleMoves, row, col, row - 2, col - 1);
                             } else {
                                 if (board[row - 1][col] == enemyPieces[0] || board[row - 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, -1, enemyPieces, possibleMoves, row, col, row - 2, col - 1);
                             }
                         }
                         if (col != BOARD_WIDTH - 1 && board[row - 2][col + 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row - 1][col] == enemyPieces[0] || board[row - 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, -1, enemyPieces, possibleMoves, row, col, row - 2, col + 1);
                             } else {
                                 if (board[row - 1][col + 1] == enemyPieces[0] || board[row - 1][col + 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, -1, enemyPieces, possibleMoves, row, col, row - 2, col + 1);
                             }
                         }
                     }
@@ -254,19 +253,19 @@ public class CheckersGame {
                         if (col != 0 && board[row + 2][col - 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row + 1][col - 1] == enemyPieces[0] || board[row + 1][col - 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row + 2, col - 1);
                             } else {
                                 if (board[row + 1][col] == enemyPieces[0] || board[row + 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row + 2, col - 1);
                             }
                         }
                         if (col != BOARD_WIDTH - 1 && board[row + 2][col + 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row + 1][col] == enemyPieces[0] || board[row + 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row + 2, col + 1);
                             } else {
                                 if (board[row + 1][col + 1] == enemyPieces[0] || board[row + 1][col + 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row + 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row + 2, col + 1);
                             }
                         }
                     }
@@ -274,23 +273,116 @@ public class CheckersGame {
                         if (col != 0 && board[row - 2][col - 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row - 1][col - 1] == enemyPieces[0] || board[row - 1][col - 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row - 2, col - 1);
                             } else {
                                 if (board[row - 1][col] == enemyPieces[0] || board[row - 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col - 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row - 2, col - 1);
                             }
                         }
                         if (col != BOARD_WIDTH - 1 && board[row - 2][col + 1] == BLANK) {
                             if (row % 2 == 0) {
                                 if (board[row - 1][col] == enemyPieces[0] || board[row - 1][col] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row - 2, col + 1);
                             } else {
                                 if (board[row - 1][col + 1] == enemyPieces[0] || board[row - 1][col + 1] == enemyPieces[1])
-                                    possibleMoves.add(new Move(row, col, row - 2, col + 1, null));
+                                    addJumpMove(board, isPlayer1Turn, 0, enemyPieces, possibleMoves, row, col, row - 2, col + 1);
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void addJumpMove(char[][] board, boolean isPlayer1Turn, int direction, char[] enemyPieces, ArrayList<Move> possibleMoves, int startRow, int startCol, int newRow, int newCol) {
+        ArrayList<ArrayList<Point>> terminalDoubleJumpSequences = new ArrayList<>();
+        getTerminalDoubleJumpSequences(board, isPlayer1Turn, direction, enemyPieces, startRow, startCol, newRow, newCol, terminalDoubleJumpSequences);
+        for (ArrayList<Point> jumpSequence : terminalDoubleJumpSequences) {
+            possibleMoves.add(new Move(startRow, startCol, newRow, newCol, jumpSequence));
+        }
+    }
+
+    private void getTerminalDoubleJumpSequences(char[][] board, boolean isPlayer1Turn, int direction, char[] enemyPieces, int baseRow, int baseCol, int newRow, int newCol, ArrayList<ArrayList<Point>> terminalDoubleJumpSequences) {
+        char[][] boardClone = Arrays.stream(board).map(el -> el.clone()).toArray($ -> board.clone());
+        makeMove(boardClone, new Move(baseRow, baseCol, newRow, newCol, null), isPlayer1Turn);
+
+        if (direction >= 0) {
+            if (!(newRow >= BOARD_HEIGHT - 2)) {
+                if (newCol != 0 && boardClone[newRow + 2][newCol - 1] == BLANK) {
+                    if (newRow % 2 == 0) {
+                        if (boardClone[newRow + 1][newCol - 1] == enemyPieces[0] || boardClone[newRow + 1][newCol - 1] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow + 2, newCol - 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    } else {
+                        if (boardClone[newRow + 1][newCol] == enemyPieces[0] || boardClone[newRow + 1][newCol] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow + 2, newCol - 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    }
+                }
+                if (newCol != BOARD_WIDTH - 1 && boardClone[newRow + 2][newCol + 1] == BLANK) {
+                    if (newRow % 2 == 0) {
+                        if (boardClone[newRow + 1][newCol] == enemyPieces[0] || boardClone[newRow + 1][newCol] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow + 2, newCol + 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    } else {
+                        if (boardClone[newRow + 1][newCol + 1] == enemyPieces[0] || boardClone[newRow + 1][newCol + 1] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow + 2, newCol + 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    }
+                }
+            }
+        }
+        if (direction <= 0) {
+            if (!(newRow <= 1)) {
+                if (newCol != 0 && boardClone[newRow - 2][newCol - 1] == BLANK) {
+                    if (newRow % 2 == 0) {
+                        if (boardClone[newRow - 1][newCol - 1] == enemyPieces[0] || boardClone[newRow - 1][newCol - 1] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow - 2, newCol - 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    } else {
+                        if (boardClone[newRow - 1][newCol] == enemyPieces[0] || boardClone[newRow - 1][newCol] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow - 2, newCol - 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    }
+                }
+                if (newCol != BOARD_WIDTH - 1 && boardClone[newRow - 2][newCol + 1] == BLANK) {
+                    if (newRow % 2 == 0) {
+                        if (boardClone[newRow - 1][newCol] == enemyPieces[0] || boardClone[newRow - 1][newCol] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow - 2, newCol + 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    } else {
+                        if (boardClone[newRow - 1][newCol + 1] == enemyPieces[0] || boardClone[newRow - 1][newCol + 1] == enemyPieces[1]) {
+                            ArrayList<ArrayList<Point>> jumpSequences = new ArrayList<>();
+                            getTerminalDoubleJumpSequences(boardClone, isPlayer1Turn, direction, enemyPieces, newRow, newCol, newRow - 2, newCol + 1, jumpSequences);
+                            terminalDoubleJumpSequences.addAll(jumpSequences);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point currentPoint = new Point(newCol, newRow);
+        if (terminalDoubleJumpSequences.isEmpty()) {
+            ArrayList<Point> newList = new ArrayList<>();
+            newList.add(currentPoint);
+            terminalDoubleJumpSequences.add(newList);
+        } else {
+            for (ArrayList<Point> jumpSequence : terminalDoubleJumpSequences) {
+                jumpSequence.add(0, currentPoint);
             }
         }
     }
