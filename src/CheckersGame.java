@@ -86,7 +86,7 @@ public class CheckersGame {
                     case BLANK:
                         break;
                     case PLAYER1PIECE:
-                        eval++;
+                        eval += 2;
                         if (row == 0)
                             eval++;
                         break;
@@ -94,7 +94,7 @@ public class CheckersGame {
                         eval += 4;
                         break;
                     case PLAYER2PIECE:
-                        eval--;
+                        eval -= 2;
                         if (row == BOARD_HEIGHT - 1)
                             eval--;
                         break;
