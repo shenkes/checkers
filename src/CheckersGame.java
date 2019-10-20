@@ -55,12 +55,16 @@ public class CheckersGame {
                     nextMove = getPlayerMove(availableMoves);
                 } else {
                     nextMove = minimax.minimaxMove(this, board, true, player1Difficulty);
+                    System.out.println("Player 1 moved:");
+                    printMove(nextMove);
                 }
             } else {
                 if (player2Difficulty == 0) {
                     nextMove = getPlayerMove(availableMoves);
                 } else {
                     nextMove = minimax.minimaxMove(this, board, false, player2Difficulty);
+                    System.out.println("Player 2 moved:");
+                    printMove(nextMove);
                 }
             }
 
@@ -488,7 +492,7 @@ public class CheckersGame {
         }
     }
 
-    public void printMoves(ArrayList<Move> moves) {
+    private void printMoves(ArrayList<Move> moves) {
         System.out.println("\nAvailable Moves:");
         for (Move move : moves) {
 
@@ -511,27 +515,31 @@ public class CheckersGame {
             }
             System.out.print("\t");
 
-            System.out.print("(");
-            if (move.getStartRow() % 2 == 0)
-                System.out.print(move.getStartCol() * 2);
-            else
-                System.out.print(move.getStartCol() * 2 + 1);
-            System.out.print(", " + move.getStartRow() + ") => (");
-            if (move.getNewRow() % 2 == 0)
-                System.out.print(move.getNewCol() * 2);
-            else
-                System.out.print(move.getNewCol() * 2 + 1);
-            System.out.print(", " + move.getNewRow() + ")");
-            for (Point point : move.getDoubleJumps()) {
-                System.out.print(" => (");
-                if (point.getY() % 2 == 0)
-                    System.out.print(point.getX() * 2);
-                else
-                    System.out.print(point.getX() * 2 + 1);
-                System.out.print(", " + point.getY() + ")");
-            }
-            System.out.println();
+            printMove(move);
         }
+    }
+
+    private void printMove(Move move) {
+        System.out.print("(");
+        if (move.getStartRow() % 2 == 0)
+            System.out.print(move.getStartCol() * 2);
+        else
+            System.out.print(move.getStartCol() * 2 + 1);
+        System.out.print(", " + move.getStartRow() + ") => (");
+        if (move.getNewRow() % 2 == 0)
+            System.out.print(move.getNewCol() * 2);
+        else
+            System.out.print(move.getNewCol() * 2 + 1);
+        System.out.print(", " + move.getNewRow() + ")");
+        for (Point point : move.getDoubleJumps()) {
+            System.out.print(" => (");
+            if (point.getY() % 2 == 0)
+                System.out.print(point.getX() * 2);
+            else
+                System.out.print(point.getX() * 2 + 1);
+            System.out.print(", " + point.getY() + ")");
+        }
+        System.out.println();
     }
 
     private void printBoard(char[][] board) {
